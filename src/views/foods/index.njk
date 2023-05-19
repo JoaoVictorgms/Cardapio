@@ -4,6 +4,16 @@
 
 {% block style %}
 <style>
+  .light-theme {
+    background-color: #ffffff;
+    color: #000000;
+  }
+
+  .dark-theme {
+    background-color: #333333;
+    color: #ffffff;
+  }
+
   .food-actions {
     cursor: pointer;
   }
@@ -19,11 +29,6 @@
   .nav-item {
     text-align: right;
   }
-  
-  .dark-mode {
-    background-color: #222;
-    color: #fff;
-  }
 </style>
 {% endblock %}
 
@@ -37,12 +42,14 @@
      title="Cadastrar comida">
     +
   </a>
-  
-  <button id="darkModeButton" class="btn btn-secondary rounded-circle mr-4 font-weight-bold" 
-          title="Ativar/desativar tema escuro">
-    Dark Mode
+</div>
+
+<div class="text-right">
+  <button id="toggle-theme-btn" class="btn btn-secondary rounded-circle mr-4 font-weight-bold" title="Alternar tema">
+    Modo Noturno
   </button>
 </div>
+
 
 <section class="card-deck my-3">
   {% for food in foods %}
@@ -72,43 +79,31 @@
   </div>
   {% endfor %}
 </section>
+{% endblock %}
 
+{% block script %}
 <script type="module">
-  function setCookie(name, value, days) {
-    const date = new Date();
-    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-    const expires = "expires=" + date.toUTCString();
-    document.cookie = name + "=" + value + ";" + expires + ";path=/";
-  }
- 
-  function getCookie(name) {
-    const cookieName = name + "=";
-    const cookies = document.cookie.split(";");
-    for (let i = 0; i < cookies.length; i++) {
-      let cookie = cookies[i];
-      while (cookie.charAt(0) === " ") {
-        cookie = cookie.substring(1);
-      }
-      if (cookie.indexOf(cookieName) === 0) {
-        return cookie.substring(cookieName.length, cookie.length);
-      }
-    }
-    return "";
-  }
-  function checkDarkModeCookie() {
-    const darkModeValue = getCookie("darkMode");
-    const body = document.querySelector("body");
-    body.classList.toggle("dark-mode", darkModeValue === "true");
+  function formatCurrency() {
+    const prices = document.querySelectorAll('.card-footer .food-price');
+    prices.forEach((price) => {
+      price.innerHTML = Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency: 'BRL',
+      }).format(price.innerHTML)
+    });
   }
 
-  function toggleDarkMode() {
-    const body = document.querySelector("body");
-    const isDarkMode = body.classList.toggle("dark-mode");
-    setCookie("darkMode", isDarkMode.toString(), 365);
+  formatCurrency();
+</script>
+<script>
+  function toggleTheme() {
+    const body = document.body;
+    const isDarkTheme = body.classList.toggle('dark-theme');
+    document.cookie = `isDarkTheme=${isDarkTheme}; path=/`;
   }
 
-  const darkModeButton = document.getElementById("darkModeButton");
-  darkModeButton.addEventListener("click", toggleDarkMode);
-  checkDarkModeCookie();
+  // Evento de clique no botão de alternar tema
+  const toggleThemeBtn = document.getElementById('toggle-theme-btn');
+  toggleThemeBtn.addEventListener('click', toggleTheme);
 </script>
 {% endblock %}
