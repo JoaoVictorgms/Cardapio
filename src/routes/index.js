@@ -9,9 +9,12 @@ const middleware = require('../middleware');
 
 router.use(middleware.initLocals);
 
-router.get('/', (req, res) => res.redirect('/foods/index'));
+router.get('/', (req, res) => {
+  const isDarkTheme = req.cookies.isDarkTheme === 'true';
 
-router.get('/', (req, res) => res.redirect('/foods/index'));
+  res.redirect(`/foods/index?isDarkTheme=${isDarkTheme}`);
+});
+
 router.get('/foods', foodsController.readAll);
 router.get('/foods/index', foodsController.index);
 router.get('/foods/create', middleware.isAuthenticated, foodsController.getCreateForm);
